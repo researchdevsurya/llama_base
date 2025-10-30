@@ -1,292 +1,392 @@
+# College RAG Chatbot - Code Workflow
 
-
-
-# 🎓 TEM RAG Chatbot - Developer Explanation
-
-This project is a **Retrieval-Augmented Generation (RAG) chatbot** that answers college-related questions.  
-It combines a **FAISS-based search** for retrieving relevant data from a CSV file and a **TinyLlama text-generation model** for generating natural language answers.
+## 📋 Overview
+A Retrieval-Augmented Generation (RAG) chatbot that answers questions about colleges using a CSV database, vector search, and AI text generation.
 
 ---
 
-## 🧠 What This Bot Does
+## 🔧 System Architecture
 
-- Loads a **colleges dataset** (CSV file).  
-- Converts each record into embeddings using **SentenceTransformer**.  
-- Stores those embeddings inside a **FAISS index** (for fast search).  
-- When a user asks a question:
-  - It finds similar text from the database.
-  - Adds context from previous memory.
-  - Sends all this to a text generation model (TinyLlama) to form a clean, factual answer.
-- Handles **greetings and polite messages**.
-- Keeps a **small memory** of past Q/A.
-- Logs all activity with timestamps.
-
----
-
-## ⚙️ Configuration Section
-
-```python
-CSV_FILE = "colleges.csv"
-PROCESSED_CSV = "colleges_processed.csv"
-FAISS_INDEX_FILE = "colleges.index"
-MEMORY_INDEX_FILE = "memory.index"
-MEMORY_FILE = "memory.jsonl"
-LOG_FILE = "college_rag.log"
-````
-
-* These are all filenames used to store processed data and logs.
-* `FAISS_INDEX_FILE` stores vector embeddings.
-* `MEMORY_FILE` stores Q/A memory.
-
-**Models:**
-
-```python
-EMBED_MODEL_NAME = "intfloat/e5-base-v2"
-GEN_MODEL = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
 ```
-
-* `e5-base-v2` is used for embeddings.
-* `TinyLlama` generates text answers.
-
----
-
-## 🧩 Logging Setup
-
-The bot logs every event both in the **console** and a **log file**.
-
-```python
-logger = logging.getLogger("CollegeRAG")
-fh = logging.FileHandler(LOG_FILE)
-ch = logging.StreamHandler()
-```
-
-This helps track:
-
-* How long tasks take.
-* What queries were asked.
-* Any errors or warnings.
-
----
-
-## 🧾 Utility Functions
-
-### `now_iso()`
-
-Returns the current time in ISO format.
-
-### `timeit(fn)`
-
-Decorator to log how long a function takes to run.
-
-### `safe_truncate(text, max_chars)`
-
-Truncates long text neatly (so it doesn’t break words).
-
----
-
-## 💬 Greeting Handler
-
-The bot can recognize over **100 common phrases** like:
-
-* “hi”, “hello”, “thanks”, “bye”, “help”, “how are you”, etc.
-
-and reply with friendly messages.
-
-### Example
-
-```python
-if user says "hi" → bot says "Hello! How can I assist you with college info today?"
-```
-
-Handled by:
-
-```python
-def handle_greeting(text: str)
+┌─────────────────┐
+│  User Query     │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────────────────────┐
+│  1. GREETING CHECK              │
+│  Is it a greeting/common phrase?│
+└────────┬───────────────┬────────┘
+         │ Yes           │ No
+         ▼               ▼
+    ┌────────┐    ┌──────────────┐
+    │ Return │    │ 2. EMBEDDING │
+    │Greeting│    │ Convert query│
+    └────────┘    │ to vector    │
+                  └──────┬───────┘
+                         │
+        ┌────────────────┴────────────────┐
+        │                                  │
+        ▼                                  ▼
+┌──────────────────┐            ┌──────────────────┐
+│ 3a. SEARCH DB    │            │ 3b. SEARCH MEMORY│
+│ Find similar     │            │ Find similar Q/A │
+│ college records  │            │ from past chats  │
+└────────┬─────────┘            └────────┬─────────┘
+         │                               │
+         └───────────┬───────────────────┘
+                     │
+                     ▼
+         ┌────────────────────┐
+         │ 4. FILTER & MERGE  │
+         │ Keep only relevant │
+         │ results (threshold)│
+         └─────────┬──────────┘
+                   │
+         ┌─────────┴──────────┐
+         │ No                  │ Yes
+         ▼                     ▼
+    ┌────────────┐    ┌────────────────┐
+    │ Return     │    │ 5. BUILD PROMPT│
+    │"No Data"   │    │ Context + Query│
+    │ Message    │    └────────┬───────┘
+    └────────────┘             │
+                               ▼
+                    ┌───────────────────┐
+                    │ 6. GENERATE ANSWER│
+                    │ AI Model produces │
+                    │ response text     │
+                    └─────────┬─────────┘
+                              │
+                              ▼
+                    ┌───────────────────┐
+                    │ 7. SAVE TO MEMORY │
+                    │ Store Q/A for     │
+                    │ future retrieval  │
+                    └─────────┬─────────┘
+                              │
+                              ▼
+                    ┌───────────────────┐
+                    │ 8. RETURN ANSWER  │
+                    │ Display to user   │
+                    └───────────────────┘
 ```
 
 ---
 
-## 🧮 Database & FAISS Index
+## 🚀 Step-by-Step Workflow
 
-### Function: `build_or_load_db()`
+### **INITIALIZATION PHASE** (Runs once at startup)
 
-This part:
+#### Step 1: Load Configuration
+- Set file paths (CSV, FAISS indexes, logs)
+- Configure models (embedding, generation)
+- Set parameters (top-k results, batch size, thresholds)
 
-1. Loads the CSV file.
-2. Combines all columns into one big text field.
-3. Creates embeddings in batches using the SentenceTransformer model.
-4. Normalizes embeddings for cosine similarity.
-5. Saves everything into a FAISS index for fast retrieval.
+#### Step 2: Setup Logging
+- Create file logger → `college_rag.log`
+- Create console logger → Terminal output
+- Log timestamps and events
 
-**FAISS** = Facebook AI Similarity Search
-It’s super fast at finding the most similar text.
-
----
-
-## 🧠 Memory System
-
-### Files Used:
-
-* `memory.jsonl` → Stores past Q/A.
-* `memory.index` → Vector index for memory retrieval.
-
-### Functions:
-
-* `ensure_memory()` – Makes sure memory files exist.
-* `load_memory_entries()` – Loads past Q/A.
-* `append_memory_entry()` – Saves new Q/A to memory.
-
-This lets the bot “remember” previous answers temporarily.
-
----
-
-## ⚡ Embedding Service
-
-Class: `EmbeddingService`
-
-This handles encoding (creating embeddings) efficiently in batches.
-
-```python
-class EmbeddingService:
-    def embed_texts(self, texts):
-        ...
+#### Step 3: Build/Load Database
+```
+IF processed CSV + FAISS index exist:
+    → Load from disk (fast)
+ELSE:
+    → Read colleges.csv
+    → Combine all columns into "combined" text
+    → Generate embeddings (batched for speed)
+    → Normalize vectors (for cosine similarity)
+    → Build FAISS index (IndexFlatIP)
+    → Save to disk for future use
 ```
 
-Every piece of text (like a college record or a user question) is converted into a **vector of numbers** that represents its meaning.
-
----
-
-## ✍️ Text Generation
-
-### Function: `load_generation_pipeline()`
-
-Loads the **TinyLlama** text-generation model using the `transformers` pipeline.
-
-* `temperature=0.7` → controls creativity.
-* `max_new_tokens=250` → limits output size.
-
-If CUDA (GPU) is available, it runs faster.
-
----
-
-## 🔍 ask_bot() – The Core Function
-
-This is the **main brain** of the chatbot.
-
-### Steps:
-
-1. **Greeting Check**
-   If the user says "hello" or "thanks", reply instantly using the greeting dictionary.
-
-2. **Embedding Query**
-   Converts the user’s question into a vector.
-
-3. **FAISS Search**
-   Finds the top relevant database records and memory entries.
-
-4. **Context Building**
-   Joins the found records into a short readable context block.
-
-5. **No Match Case**
-   If nothing relevant is found, gives a polite message:
-
-   > “I couldn’t find any relevant information. Please provide more details.”
-
-6. **Prompt Creation**
-   Builds a clean instruction prompt for the LLM:
-
-   * Only use verified data.
-   * Be factual.
-   * No repetition or hallucination.
-
-7. **Model Generation**
-   Sends the prompt to the generation model (`TinyLlama`).
-   Retries up to 3 times if there’s an error.
-
-8. **Save to Memory**
-   Stores question + answer for future searches.
-
----
-
-## 🧑‍💻 Main Loop (Interactive Mode)
-
-### Function: `main_loop()`
-
-This keeps the bot running in the terminal.
-
-```python
-while True:
-    q = input("You: ")
-    answer = ask_bot(q)
-    print(answer)
+#### Step 4: Initialize Memory System
+```
+IF memory.jsonl exists:
+    → Load past Q/A entries
+IF memory.index exists:
+    → Load memory FAISS index
+ELSE:
+    → Create empty memory (builds on first query)
 ```
 
-Type `exit` or `quit` to stop the bot.
+#### Step 5: Load AI Models
+- **Embedding Model**: `intfloat/e5-base-v2` (converts text → vectors)
+- **Generation Model**: `TinyLlama-1.1B-Chat` (generates answers)
 
 ---
 
-## 🗂️ File Outputs Summary
+### **QUERY PROCESSING PHASE** (Runs for each user question)
 
-| File Name                | Purpose                                   |
-| ------------------------ | ----------------------------------------- |
-| `colleges.csv`           | Main college dataset                      |
-| `colleges_processed.csv` | Preprocessed dataset with combined text   |
-| `colleges.index`         | FAISS index for DB embeddings             |
-| `memory.jsonl`           | Stores previous Q/A for short-term memory |
-| `memory.index`           | FAISS index for memory                    |
-| `college_rag.log`        | Logs all events and errors                |
+#### Step 6: Receive User Query
+```python
+User: "What are the top engineering colleges in Mumbai?"
+```
+
+#### Step 7: Check for Greetings
+```
+IF query matches greeting patterns:
+    → Return pre-defined friendly response
+    → SKIP to Step 14 (no RAG needed)
+```
+
+**Greeting Examples:**
+- "hi" → "Hello! How can I assist you?"
+- "thank you" → "You're very welcome! 😊"
+- "bye" → "Goodbye! 👋 Keep learning."
+
+#### Step 8: Embed Query
+```python
+query_text = "query: What are the top engineering colleges in Mumbai?"
+query_vector = embedding_service.embed_texts([query_text])
+# Result: [0.123, -0.456, 0.789, ...] (384-dim vector)
+```
+
+#### Step 9: Search Database (FAISS)
+```
+1. Search DB index with query vector
+2. Get top-k results (default: 3)
+3. Each result has:
+   - Score (similarity: 0.0 to 1.0)
+   - Index (row in CSV)
+   
+Example:
+  [Score: 0.85] → Row 42: "IIT Bombay | Mumbai | Engineering | ..."
+  [Score: 0.72] → Row 108: "VJTI | Mumbai | Engineering | ..."
+  [Score: 0.68] → Row 215: "SPIT | Mumbai | Engineering | ..."
+```
+
+#### Step 10: Search Memory (Recent Q/A)
+```
+1. Load past Q/A entries from memory.jsonl
+2. Rebuild memory FAISS index (small, so fast)
+3. Search memory with query vector
+4. Get top-k_mem results (default: 3)
+
+Example:
+  [Score: 0.91] → "Q: Best engineering colleges? A: IIT Bombay ranks..."
+  [Score: 0.76] → "Q: Mumbai colleges? A: VJTI is highly regarded..."
+```
+
+#### Step 11: Filter Results by Threshold
+```
+SIMILARITY_THRESHOLD = 0.2 (configurable)
+
+For each result (DB + Memory):
+    IF score >= 0.2:
+        → Keep it
+    ELSE:
+        → Discard (not relevant enough)
+```
+
+#### Step 12: Build Context Block
+```
+1. Merge DB + Memory results
+2. Sort by score (highest first)
+3. Truncate texts to avoid overflow
+4. Create formatted context:
+
+Context:
+---
+[score:0.91] Q: Best engineering colleges? A: IIT Bombay ranks #1...
+---
+[score:0.85] IIT Bombay | Mumbai | Engineering | Fees: 2L/year...
+---
+[score:0.76] Q: Mumbai colleges? A: VJTI is highly regarded...
+---
+```
+
+#### Step 13: Generate Answer
+
+**IF NO CONTEXT FOUND:**
+```python
+return "I couldn't find any relevant information in my database. 
+        Please provide more details (college name/program/location)."
+```
+
+**IF CONTEXT FOUND:**
+```
+1. Build prompt:
+   - System instruction: "You are CollegeBot, concise and factual"
+   - Context block (from Step 12)
+   - User question
+   - Rules: "Answer only from context, don't hallucinate"
+
+2. Send to AI generation model
+3. Retry up to 3 times if fails
+4. Extract answer from model output
+5. Clean up formatting
+```
+
+**Example Prompt:**
+```
+You are CollegeBot — concise, professional, and factual.
+
+Context:
+[score:0.85] IIT Bombay | Mumbai | Engineering | Fees: 2L/year...
+[score:0.72] VJTI | Mumbai | Engineering | Fees: 80K/year...
+
+User Question: What are the top engineering colleges in Mumbai?
+
+Instructions:
+- Answer only based on the provided context
+- Be concise and helpful
+- Don't hallucinate
+
+Answer:
+```
+
+**Model Output:**
+```
+Based on the data, the top engineering colleges in Mumbai include:
+1. IIT Bombay - Premier institution with ₹2L/year fees
+2. VJTI - Highly regarded with ₹80K/year fees
+```
+
+#### Step 14: Save to Memory
+```python
+memory_entry = {
+    "id": 1698765432000,
+    "question": "What are the top engineering colleges in Mumbai?",
+    "answer": "Based on the data, the top engineering colleges...",
+    "timestamp": "2025-10-30T10:30:45Z"
+}
+
+→ Append to memory.jsonl
+→ Keep only last 300 entries (rolling window)
+```
+
+#### Step 15: Return Answer to User
+```
+🎯 Answer:
+------------------------------------------------------------
+Based on the data, the top engineering colleges in Mumbai include:
+1. IIT Bombay - Premier institution with ₹2L/year fees
+2. VJTI - Highly regarded with ₹80K/year fees
+------------------------------------------------------------
+```
 
 ---
 
-## 💡 Developer Notes
+## 🗂️ Data Flow Summary
 
-* **Batch embedding** improves speed for large CSVs.
-* **FAISS.normalize_L2()** enables cosine similarity search.
-* **SIMILARITY_THRESHOLD** (default 0.2) controls how relevant matches must be.
-* **Memory entries** are limited to 300 to avoid slowing down the bot.
-* **TinyLlama** is a small and fast model, perfect for local usage.
+```
+CSV File (colleges.csv)
+    ↓ [Read & Process]
+Preprocessed CSV (colleges_processed.csv)
+    ↓ [Generate Embeddings]
+FAISS Index (colleges.index) → Fast Vector Search
+    ↓
+User Query → Embedding → Search → Context
+    ↓
+AI Model → Generate Answer
+    ↓
+memory.jsonl (Q/A History) → Future Retrieval
+```
 
 ---
 
-## 🧰 Requirements
+## 🛠️ Key Technologies
 
-Install all dependencies:
+| Component | Technology | Purpose |
+|-----------|-----------|---------|
+| **Embeddings** | SentenceTransformer (e5-base-v2) | Convert text → vectors |
+| **Vector Search** | FAISS (IndexFlatIP) | Fast similarity search |
+| **Generation** | TinyLlama-1.1B-Chat | Generate natural answers |
+| **Database** | Pandas + CSV | Store college data |
+| **Memory** | JSONL + FAISS | Store past Q/A |
+| **Logging** | Python logging | Track events |
+
+---
+
+## 📊 Performance Features
+
+1. **Batched Embeddings**: Process 64 texts at once (faster than one-by-one)
+2. **Normalized Vectors**: Use cosine similarity via inner product (efficient)
+3. **Persistent Indexes**: Load pre-built FAISS indexes (skip re-computation)
+4. **Threshold Filtering**: Discard low-quality results (cleaner answers)
+5. **Memory System**: Learn from past conversations (improves over time)
+6. **Retry Logic**: Handle generation failures gracefully
+
+---
+
+## 🎯 Usage Example
 
 ```bash
-pip install pandas numpy torch sentence-transformers transformers faiss-cpu tqdm
-```
+$ python college_rag_chatbot.py
 
-(Optional GPU version):
+🎓 College RAG Chatbot — type 'exit' or 'quit' to stop.
 
-```bash
-pip install faiss-gpu
-```
+You: hi
+🎯 Answer: Hello! How can I assist you with college or course info today?
 
-Run the bot:
+You: What are the fees for IIT Bombay?
+[Searches DB → Finds IIT Bombay record → Generates answer]
+🎯 Answer: IIT Bombay's tuition fees are approximately ₹2 lakh per year...
 
-```bash
-python college_rag_bot.py
+You: thank you
+🎯 Answer: You're very welcome! 😊
+
+You: exit
+👋 Goodbye!
 ```
 
 ---
 
-## 🧾 Summary
+## 📝 Configuration Guide
 
-✅ Uses **SentenceTransformer** for semantic search
-✅ Uses **FAISS** for vector similarity
-✅ Uses **TinyLlama** for answer generation
-✅ Handles greetings and polite replies
-✅ Maintains small memory for better context
-✅ Fully runs offline (if models are cached)
+### Adjust Performance
+```python
+TOP_K = 3              # More results = better context (slower)
+BATCH_SIZE = 64        # Larger = faster (needs more memory)
+SIMILARITY_THRESHOLD = 0.2  # Higher = stricter (fewer results)
+```
+
+### Change Models
+```python
+EMBED_MODEL_NAME = "intfloat/e5-base-v2"  # Swap for different embeddings
+GEN_MODEL = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"  # Use larger LLMs
+```
+
+### Memory Settings
+```python
+MEMORY_MAX_ENTRIES = 300  # Keep last N Q/A pairs
+TOP_K_MEM = 3            # How many memory results to retrieve
+```
 
 ---
 
-### 👨‍💻 Developer Tip
+## 🐛 Error Handling
 
-If you want to turn this into an API, you can easily wrap the `ask_bot()` function inside a Flask or FastAPI endpoint.
+1. **No Data Found**: Returns polite "no information" message
+2. **Generation Failure**: Retries 3 times, then shows error message
+3. **Index Missing**: Rebuilds from CSV automatically
+4. **Memory Corruption**: Rebuilds memory index on next query
 
 ---
 
-**Author:** Surya
-**Project:** College RAG Chatbot (Local Intelligent Assistant for Colleges)
+## 📂 File Structure
 
+```
+project/
+├── college_rag_chatbot.py      # Main code
+├── colleges.csv                # Input data
+├── colleges_processed.csv      # Preprocessed data
+├── colleges.index              # DB FAISS index
+├── memory.jsonl                # Q/A history
+├── memory.index                # Memory FAISS index
+└── college_rag.log             # Logs
+```
+
+---
+
+## 🎓 Summary
+
+This chatbot uses **RAG (Retrieval-Augmented Generation)** to answer college-related questions:
+
+1. **Retrieve** relevant info from database + memory
+2. **Augment** the query with context
+3. **Generate** natural language answer using AI
+
+The system is fast (batched operations), persistent (saves indexes), and learns over time (memory system). Perfect for building educational assistants! 🚀
