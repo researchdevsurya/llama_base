@@ -48,3 +48,26 @@
 2025-10-24 11:43:20 INFO Query received: Whats the fees for B.Com full course in hr college
 2025-10-24 11:43:22 INFO Generating response (attempt 1)
 2025-10-24 11:43:28 INFO Generated answer in 8.531s; saved to memory id=1761286408602
+2025-10-30 13:30:05 INFO Starting College RAG Bot on device: cpu
+2025-10-30 13:30:05 INFO Loading preprocessed CSV and FAISS index from disk.
+2025-10-30 13:30:05 INFO build_or_load_db took 0.100s
+2025-10-30 13:30:05 INFO Loading embedding model: intfloat/e5-base-v2 on cpu
+2025-10-30 13:30:58 INFO Loading text-generation model pipeline.
+2025-10-30 13:35:22 INFO load_generation_pipeline took 263.842s
+2025-10-30 14:30:56 INFO Query received: give me info about hr college
+2025-10-30 14:30:58 INFO Generating response (attempt 1)
+2025-10-30 14:31:29 INFO Generated answer in 32.923s; saved to memory id=1761814889343
+2025-10-30 14:31:53 INFO Starting College RAG Bot on device: cpu
+2025-10-30 14:31:53 INFO Loading preprocessed CSV and FAISS index from disk.
+2025-10-30 14:31:53 INFO build_or_load_db took 0.096s
+2025-10-30 14:31:53 INFO Loading embedding model: intfloat/e5-base-v2 on cpu
+2025-10-30 14:31:57 INFO Loading text-generation model pipeline.
+2025-10-30 14:31:58 INFO load_generation_pipeline took 1.169s
+2025-10-30 14:32:06 INFO Query received: give me info about amity college
+2025-10-30 14:32:09 INFO Generating response (attempt 1)
+2025-10-30 14:32:54 INFO Generated answer in 48.013s; saved to memory id=1761814974571
+2025-10-30 14:44:28 INFO Query received: hi
+2025-10-30 14:44:28 INFO Greeting handled by greeting module.
+2025-10-30 14:44:32 INFO Query received: harshit
+2025-10-30 14:44:34 INFO Generating response (attempt 1)
+2025-10-30 14:45:36 INFO Generated answer in 64.850s; saved to memory id=1761815736888

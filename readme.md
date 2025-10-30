@@ -1,6 +1,6 @@
 
 
-````markdown
+
 # 🎓 TEM RAG Chatbot - Developer Explanation
 
 This project is a **Retrieval-Augmented Generation (RAG) chatbot** that answers college-related questions.  
