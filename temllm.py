@@ -8,6 +8,8 @@ College RAG Chatbot - redesigned:
 - polite no-data reply when nothing relevant is found
 - greeting handling
 """
+# ! OWN PACKAGE
+from responses import GREETINGS
 
 import os
 import json
@@ -93,127 +95,6 @@ def safe_truncate(text: str, max_chars: int):
 # -----------------------------
 # Greeting handler
 # -----------------------------
-GREETINGS = {
-    # 1–10: Greetings
-    "hi": "Hello! How can I assist you with college or course info today?",
-    "hello": "Hi there! Ask me about colleges, courses, or exams.",
-    "hey": "Hey! Looking for college or course details?",
-    "good morning": "Good morning! Ready to learn something new?",
-    "good afternoon": "Good afternoon! What info can I get for you?",
-    "good evening": "Good evening! How can I help with college info?",
-    "welcome": "Welcome! I’m here to help with your academic questions.",
-    "greetings": "Greetings! How may I assist your learning journey?",
-    "namaste": "Namaste! How can I support your education goals?",
-    "yo": "Hey there! Curious about colleges or courses?",
-
-    # 11–20: Appreciation
-    "thank you": "You're very welcome! 😊",
-    "thanks": "Glad to help! 👍",
-    "thankyou": "No problem! Always here to help.",
-    "tysm": "You’re most welcome! Anything else you’d like to know?",
-    "thx": "No worries! 😊",
-    "appreciate it": "That means a lot! Let me know if you need more info.",
-    "grateful": "Happy to assist your learning journey!",
-    "thanks a lot": "Anytime! Keep exploring and learning.",
-    "thank u": "You’re welcome! 😊",
-    "thankyou so much": "You’re most welcome! I’m here whenever you need me.",
-
-    # 21–30: Help & Support
-    "help": "Sure! Tell me what you need help with — college, course, or admission?",
-    "i need help": "Absolutely! What are you trying to find?",
-    "can you help me": "Of course! Ask me about any college or course.",
-    "assist me": "I’d be happy to help! What’s your query?",
-    "what can you do": "I can help you find info about colleges, courses, and admissions.",
-    "help me choose": "Sure! Tell me your interests, and I’ll suggest some colleges or programs.",
-    "how to apply": "I can guide you through the application process! Which college or course?",
-    "college suggestion": "Got it! Tell me your preferred field or location.",
-    "course suggestion": "Sure! What kind of course are you interested in — UG, PG, or diploma?",
-    "find college": "I can help with that! Which city or subject are you looking for?",
-
-    # 31–40: Confirmation
-    "ok": "Alright! 👍",
-    "okay": "Okay! What next?",
-    "sure": "Sure! Let's do this.",
-    "yes": "Great! Tell me more.",
-    "yeah": "Perfect! What do you want to know?",
-    "yup": "Got it!",
-    "done": "All set! Anything else?",
-    "fine": "Good to hear! How can I help now?",
-    "great": "Awesome! Let’s continue.",
-    "cool": "Cool 😎 Let’s proceed!",
-
-    # 41–50: Clarification Requests
-    "what do you mean": "I meant about college or course details. Want me to explain again?",
-    "explain me ": "Sure can you explain me again what you really want.",
-    "repeat": "Got it! Let me rephrase that.",
-    "say again": "No problem! I’ll say it again clearly.",
-    "confused": "No worries — I’ll simplify that for you.",
-    "not clear": "Let me clarify that for you.",
-    "meaning": "Here’s what that means in simple terms.",
-    "details": "Sure! Here are the full details.",
-    "more info": "Alright! Here’s some more information for you.",
-    "tell me more": "Of course! Let’s dive deeper into that.",
-
-    # 51–60: Politeness & Courtesy
-    "please": "Of course! Happy to assist.",
-    "kindly": "Sure! I’ll take care of that.",
-    "sorry": "No worries at all! Let’s fix it together.",
-    "my bad": "All good! Happens to everyone.",
-    "excuse me": "Yes! How can I assist?",
-    "no problem": "Exactly! We’re good to go.",
-    "never mind": "Alright! Let’s move on.",
-    "its okay": "Glad to hear! 😊",
-    "no worries": "Perfect! Let’s continue.",
-    "thanks anyway": "Anytime! Wishing you the best.",
-
-    # 61–70: Farewell
-    "bye": "Goodbye! 👋 Keep learning and exploring.",
-    "goodbye": "Bye! Hope to see you again soon.",
-    "see you": "See you later! Keep working hard.",
-    "take care": "You too! Stay curious.",
-    "catch you later": "Sure! Come back anytime.",
-    "see ya": "See ya! 👋",
-    "later": "Later! Stay motivated.",
-    "peace": "Peace out! ✌️",
-    "tata": "Tata! 😊 Study well.",
-    "good night": "Good night! Rest well and dream big.",
-
-    # 71–80: Acknowledgment / Small Talk
-    "nice": "Glad you liked it!",
-    "awesome": "Awesome indeed! 😄",
-    "amazing": "Right? It’s pretty cool!",
-    "wow": "Wow! That’s exciting!",
-    "great job": "Thanks! I try my best.",
-    "good": "Good to hear!",
-    "perfect": "Perfect! Let’s continue.",
-    "interesting": "Yes, it really is!",
-    "cool stuff": "Totally! 😎",
-    "that helps": "Happy to hear that!",
-
-    # 81–90: General Conversation
-    "who are you": "I’m your educational assistant, here to help with college info!",
-    "what can you do": "I can help you find colleges, courses, fees, and admission details.",
-    "where are you from": "I live in the cloud 🌩️ — always online to help students.",
-    "are you a bot": "Yes! A smart educational chatbot built to help learners.",
-    "how are you": "I’m great! Ready to help you. How about you?",
-    "what’s up": "Just helping students like you! How can I assist?",
-    "do you know colleges": "Yes! I know many colleges, courses, and admission details.",
-    "tell me a fact": "Did you know? The oldest university in the world is the University of Bologna (1088)!",
-    "tell me something": "Sure! Did you know? Learning 15 minutes daily can double your knowledge in a year.",
-    "you are smart": "Thank you! I’m learning from you too. 😊",
-
-    # 91–100: Motivation & Learning
-    "motivate me": "You’re capable of amazing things — keep going!",
-    "study tips": "Study smart: Focus for 25 mins, rest 5 mins, repeat. 🧠",
-    "exam tips": "Stay calm, revise well, and sleep enough — confidence is key!",
-    "how to focus": "Turn off distractions, set small goals, and reward yourself!",
-    "how to learn fast": "Use active recall and spaced repetition — works wonders!",
-    "career advice": "Choose a field that excites you — success will follow.",
-    "college life": "College is about learning, exploring, and growing — enjoy it!",
-    "success tips": "Consistency beats talent — keep at it daily!",
-    "daily routine": "Wake early, plan, learn, rest, and repeat — simple formula!",
-    "thank you bot": "Always a pleasure! Keep shining in your studies. 🌟",
-}
 
 
 def handle_greeting(text: str) -> Optional[str]:
