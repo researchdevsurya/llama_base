@@ -23,7 +23,7 @@ FAISS_INDEX_FILE = "colleges.index"      # saved FAISS index
 EMBED_MODEL_NAME = "intfloat/e5-base-v2" # must match the model used for indexing
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 TOP_K = 5                                # number of results to show
-SIMILARITY_THRESHOLD = 0.2               # skip low-similarity results
+SIMILARITY_THRESHOLD = 0.8               # skip low-similarity results
 
 # -----------------------------
 # Load Database & FAISS Index

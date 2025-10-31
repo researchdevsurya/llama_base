@@ -43,3 +43,20 @@
 2025-10-31 12:24:29 INFO Query received: MS in Obstetrtics and Gynaecology
 2025-10-31 12:24:29 INFO Generating response (attempt 1)
 2025-10-31 12:24:57 INFO Generated answer in 27.613s; saved to memory id=1761893697001
+2025-10-31 14:16:37 INFO Starting College RAG Bot on device: cpu
+2025-10-31 14:16:38 INFO Loading preprocessed CSV and FAISS index from disk.
+2025-10-31 14:16:38 INFO build_or_load_db took 0.076s
+2025-10-31 14:16:38 INFO Loading embedding model: intfloat/e5-base-v2 on cpu
+2025-10-31 14:16:41 INFO Loading LLaMA 8B generation model pipeline.
+2025-10-31 14:16:41 ERROR Failed to load generation model pipeline: meta-llama/Llama-3-8B-Instruct is not a local folder and is not a valid model identifier listed on 'https://huggingface.co/models'
+If this is a private repository, make sure to pass a token having permission to this repo either by logging in with `hf auth login` or by passing `token=<your_token>`
+2025-10-31 17:46:36 INFO Starting College RAG Bot on device: cpu
+2025-10-31 17:46:36 INFO Loading preprocessed CSV and FAISS index from disk.
+2025-10-31 17:46:36 INFO build_or_load_db took 0.111s
+2025-10-31 17:46:36 INFO Loading embedding model: intfloat/e5-base-v2 on cpu
+2025-10-31 17:46:40 INFO Loading text-generation model pipeline.
+2025-10-31 17:46:41 INFO load_generation_pipeline took 1.262s
+2025-10-31 17:46:45 INFO Query received: hi
+2025-10-31 17:46:45 INFO Greeting handled by greeting module.
+2025-10-31 17:46:48 INFO Query received: harshit
+2025-10-31 17:46:48 INFO Generating response (attempt 1)
