@@ -1,0 +1,45 @@
+2025-10-31 11:47:37 INFO Starting College RAG Bot on device: cpu
+2025-10-31 11:47:37 INFO Reading CSV and preparing DB.
+2025-10-31 11:47:37 INFO Computing embeddings for DB (batched).
+2025-10-31 11:52:55 INFO Saving processed CSV and FAISS index.
+2025-10-31 11:52:55 INFO build_or_load_db took 317.652s
+2025-10-31 11:52:55 INFO Loading embedding model: intfloat/e5-base-v2 on cpu
+2025-10-31 11:52:59 INFO Loading text-generation model pipeline.
+2025-10-31 11:57:52 INFO load_generation_pipeline took 292.459s
+2025-10-31 12:07:38 INFO Starting College RAG Bot on device: cpu
+2025-10-31 12:07:38 INFO Loading preprocessed CSV and FAISS index from disk.
+2025-10-31 12:07:39 INFO build_or_load_db took 0.108s
+2025-10-31 12:07:39 INFO Loading embedding model: intfloat/e5-base-v2 on cpu
+2025-10-31 12:07:44 INFO Loading text-generation model pipeline.
+2025-10-31 12:07:45 INFO load_generation_pipeline took 1.262s
+2025-10-31 12:10:43 INFO Query received: give me details about bsc in computer science in mitibia college
+2025-10-31 12:10:43 INFO Greeting handled by greeting module.
+2025-10-31 12:11:11 INFO Query received: give me details about bsc in computer science in mitibia college
+2025-10-31 12:11:11 INFO Greeting handled by greeting module.
+2025-10-31 12:11:26 INFO Starting College RAG Bot on device: cpu
+2025-10-31 12:11:26 INFO Loading preprocessed CSV and FAISS index from disk.
+2025-10-31 12:11:26 INFO build_or_load_db took 0.066s
+2025-10-31 12:11:26 INFO Loading embedding model: intfloat/e5-base-v2 on cpu
+2025-10-31 12:11:30 INFO Loading text-generation model pipeline.
+2025-10-31 12:11:31 INFO load_generation_pipeline took 1.192s
+2025-10-31 12:11:37 INFO Query received: give me details about bsc in computer science in mitibia college
+2025-10-31 12:11:37 INFO Generating response (attempt 1)
+2025-10-31 12:12:29 INFO Generated answer in 52.527s; saved to memory id=1761892949991
+2025-10-31 12:14:11 INFO Starting College RAG Bot on device: cpu
+2025-10-31 12:14:11 INFO Loading preprocessed CSV and FAISS index from disk.
+2025-10-31 12:14:11 INFO build_or_load_db took 0.079s
+2025-10-31 12:14:11 INFO Loading embedding model: intfloat/e5-base-v2 on cpu
+2025-10-31 12:14:16 INFO Loading text-generation model pipeline.
+2025-10-31 12:14:18 INFO load_generation_pipeline took 1.326s
+2025-10-31 12:16:15 INFO Query received: give me info about mithibia college
+2025-10-31 12:16:16 INFO Generating response (attempt 1)
+2025-10-31 12:16:51 INFO Generated answer in 35.927s; saved to memory id=1761893211879
+2025-10-31 12:24:20 INFO Starting College RAG Bot on device: cpu
+2025-10-31 12:24:20 INFO Loading preprocessed CSV and FAISS index from disk.
+2025-10-31 12:24:20 INFO build_or_load_db took 0.067s
+2025-10-31 12:24:20 INFO Loading embedding model: intfloat/e5-base-v2 on cpu
+2025-10-31 12:24:23 INFO Loading text-generation model pipeline.
+2025-10-31 12:24:25 INFO load_generation_pipeline took 1.275s
+2025-10-31 12:24:29 INFO Query received: MS in Obstetrtics and Gynaecology
+2025-10-31 12:24:29 INFO Generating response (attempt 1)
+2025-10-31 12:24:57 INFO Generated answer in 27.613s; saved to memory id=1761893697001

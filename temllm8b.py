@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# TinyLlama/TinyLlama-1.1B-Chat-v1.0 
+# meta-llama/Llama-3-8B-Instruct
 """
 College RAG Chatbot - redesigned:
 - fast batched embeddings
@@ -17,14 +17,15 @@ import os
 import json
 import time
 import logging
-from datetime import datetime, timezone
+from datetime import datetime
 from typing import List, Optional
 
 import pandas as pd
 import numpy as np
 import torch
 from sentence_transformers import SentenceTransformer
-from transformers import pipeline
+from transformers import pipeline, AutoTokenizer, AutoModelForCausalLM
+
 import faiss
 from tqdm import tqdm
 from time import sleep
@@ -41,12 +42,12 @@ LOG_FILE = "college_rag.log"
 
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 EMBED_MODEL_NAME = "intfloat/e5-base-v2"       # high-quality embedding model
-GEN_MODEL = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"  # or your LLM
+GEN_MODEL = "meta-llama/Llama-3-8B-Instruct"
 TOP_K = 3                                      # number DB hits
 TOP_K_MEM = 3                                  # number memory hits
 BATCH_SIZE = 64                                # embedding batch size
 MAX_PROMPT_CHARS = 2000
-MAX_CONTEXT_CHARS = 12000
+MAX_CONTEXT_CHARS = 1200
 MAX_RETRIES = 3
 MEMORY_MAX_ENTRIES = 300                       # keep memory small (last N Q/A)
 SIMILARITY_THRESHOLD = 0.2                     # inner product threshold (tune)
@@ -75,11 +76,8 @@ logger.info(f"Starting College RAG Bot on device: {DEVICE}")
 # -----------------------------
 # Utility helpers
 # -----------------------------
-
-
 def now_iso():
-    return datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z')
-
+    return datetime.utcnow().isoformat() + "Z"
 
 def timeit(fn):
     def wrapper(*a, **k):
@@ -221,17 +219,32 @@ class EmbeddingService:
 # -----------------------------
 # Text generation pipeline (with retries)
 # -----------------------------
+
+
 @timeit
 def load_generation_pipeline():
     device_id = 0 if torch.cuda.is_available() else -1
-    logger.info("Loading text-generation model pipeline.")
+    logger.info("Loading LLaMA 8B generation model pipeline.")
+    
+    model_name = GEN_MODEL
+
+    # Load model + tokenizer explicitly for better control
+    model = AutoModelForCausalLM.from_pretrained(
+        model_name,
+        torch_dtype=torch.bfloat16 if torch.cuda.is_available() else torch.float32,
+        device_map="auto",
+    )
+    tokenizer = AutoTokenizer.from_pretrained(model_name)
+
     gen_pipe = pipeline(
         "text-generation",
-        model=GEN_MODEL,
+        model=model,
+        tokenizer=tokenizer,
         device=device_id,
-        max_new_tokens=250,
+        max_new_tokens=350,
         temperature=0.7,
-        do_sample=True,
+        top_p=0.9,
+        repetition_penalty=1.1,
     )
     return gen_pipe
 
@@ -341,12 +354,6 @@ def ask_bot(query: str, top_k: int = TOP_K, top_k_mem: int = TOP_K_MEM) -> str:
         )
         logger.info(f"Responded (no-data) in {(time.time()-t_start):.3f}s")
         return answer
-
-
-    print("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
-    print(context_block)
-    print("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
-
 
     # Build prompt
     prompt = f"""

@@ -1,0 +1,6 @@
+version: 2.0
+updated: 2025-10-30
+author: Surya
+notes:
+  - Improved college roster search
+  - Fixed minor UI bug
