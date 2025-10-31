@@ -55,7 +55,7 @@ GREETINGS = {
     "confused": "No worries — I’ll simplify that for you.",
     "not clear": "Let me clarify that for you.",
     "meaning": "Here’s what that means in simple terms.",
-    "details": "Sure! Here are the full details.",
+    # "details": "Sure! Here are the full details.",
     "more info": "Alright! Here’s some more information for you.",
     "tell me more": "Of course! Let’s dive deeper into that.",
 

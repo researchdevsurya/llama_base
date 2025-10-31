@@ -17,7 +17,7 @@ import os
 import json
 import time
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List, Optional
 
 import pandas as pd
@@ -46,7 +46,7 @@ TOP_K = 3                                      # number DB hits
 TOP_K_MEM = 3                                  # number memory hits
 BATCH_SIZE = 64                                # embedding batch size
 MAX_PROMPT_CHARS = 2000
-MAX_CONTEXT_CHARS = 1200
+MAX_CONTEXT_CHARS = 12000
 MAX_RETRIES = 3
 MEMORY_MAX_ENTRIES = 300                       # keep memory small (last N Q/A)
 SIMILARITY_THRESHOLD = 0.2                     # inner product threshold (tune)
@@ -75,8 +75,11 @@ logger.info(f"Starting College RAG Bot on device: {DEVICE}")
 # -----------------------------
 # Utility helpers
 # -----------------------------
+
+
 def now_iso():
-    return datetime.utcnow().isoformat() + "Z"
+    return datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z')
+
 
 def timeit(fn):
     def wrapper(*a, **k):
@@ -338,6 +341,12 @@ def ask_bot(query: str, top_k: int = TOP_K, top_k_mem: int = TOP_K_MEM) -> str:
         )
         logger.info(f"Responded (no-data) in {(time.time()-t_start):.3f}s")
         return answer
+
+
+    print("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
+    print(context_block)
+    print("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
+
 
     # Build prompt
     prompt = f"""
