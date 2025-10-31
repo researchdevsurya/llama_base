@@ -10,6 +10,7 @@ GREETINGS = {
     "greetings": "Greetings! How may I assist your learning journey?",
     "namaste": "Namaste! How can I support your education goals?",
     "yo": "Hey there! Curious about colleges or courses?",
+    "Harshit": "Hey! Harshit I know You, i am sumit from Thakur Clg the Drinker",
 
     # 11–20: Appreciation
     "thank you": "You're very welcome! 😊",
