@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+
+# TinyLlama/TinyLlama-1.1B-Chat-v1.0 
 """
 College RAG Chatbot - redesigned:
 - fast batched embeddings
