@@ -1,6 +1,5 @@
-Got it ✅ — you want to replace the small `TinyLlama` model in your **College RAG Chatbot** with a **LLaMA 8B** model (e.g., *Meta-Llama-3-8B-Instruct*).
+### Replace the small `TinyLlama` model in your **College RAG Chatbot** with a **LLaMA 8B** model (e.g., *Meta-Llama-3-8B-Instruct*).
 
-Let’s go through exactly how to update your script properly.
 
 ---
 
@@ -137,4 +136,3 @@ That lets you run LLaMA 8B on ~8–12GB GPUs.
 
 ---
 
-Would you like me to show you **the full revised code snippet** for your `load_generation_pipeline()` and `ask_bot()` functions — fully optimized for `LLaMA 3 8B` (including quantization if GPU memory is limited)?
