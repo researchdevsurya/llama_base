@@ -1,0 +1,56 @@
+REMOVE ALL PYTHON THINGS
+Python.3.12
+
+python --version
+pip --version
+
+
+
+Requirement PKG : 
+======================================================================================================================
+python -m pip install -U pip
+pip install torch torchvision torchaudio transformers sentence-transformers faiss-cpu pandas numpy tqdm psutil
+> pip install torch torchvision torchaudio transformers sentence-transformers faiss-cpu pandas numpy tqdm psutil
+
+---------------------------------------------------------------------------------------------
+PACKAGE               | PURPOSE / USAGE
+---------------------------------------------------------------------------------------------
+torch                 | Core deep learning library (PyTorch). GPU/CPU tensor ops & model training.
+torchvision           | Vision add-on for PyTorch. Pretrained CNNs, image transforms, datasets.
+torchaudio            | Audio add-on for PyTorch. Load/process waveforms, speech/audio models.
+transformers          | Hugging Face library for NLP & LLMs (BERT, GPT, LLaMA, etc.).
+sentence-transformers | High-level embeddings on top of Transformers for similarity/search.
+faiss-cpu             | Facebook AI Similarity Search (CPU). Fast vector search & clustering.
+pandas                | DataFrames for structured data. CSV/Excel/SQL read-write, analysis.
+numpy                 | Base math array library. Fast matrix ops for ML & data processing.
+tqdm                  | Progress bars for loops, downloads, or training epochs.
+psutil                | Monitor CPU, RAM, and process stats during ML or system tasks.
+---------------------------------------------------------------------------------------------
+
+
+Condo Versioning in PYTHON : 
+======================================================================================================================
+py -3.12 -m venv .venv
+
+
+Huggingface Requirements :
+======================================================================================================================
+pip install -U huggingface_hub
+python -m pip install --force-reinstall --upgrade huggingface_hub[cli]
+
+ERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.                                             
+transformers 4.57.1 requires huggingface-hub<1.0,>=0.34.0, but you have huggingface-hub 1.0.1 which is incompatible.
+Successfully installed anyio-4.11.0 click-8.3.0 h11-0.16.0 hf-xet-1.2.0 httpcore-1.0.9 httpx-0.28.1 huggingface_hub-1.0.1 shellingham-1.5.4 sniffio-1.3.1 typer-slim-0.20.0
+PS D:\SURYA SK\AI_ML\Tem_chatbot T\llama_base> pip install "huggingface_hub<1.0" --force-reinstall'''
+
+step 1: huggingface-cli login
+step 2: huggingface-cli whoami 
+
+
+
+
+FOR CPU 
+pip install --upgrade pip
+pip install torch==2.4.1 torchvision==0.19.1 torchaudio==2.4.1 --index-url https://download.pytorch.org/whl/cpu
+pip install transformers sentence-transformers faiss-cpu pandas numpy tqdm psutil
+

@@ -230,10 +230,14 @@ def load_generation_pipeline():
 
     # Load model + tokenizer explicitly for better control
     model = AutoModelForCausalLM.from_pretrained(
-        model_name,
-        torch_dtype=torch.bfloat16 if torch.cuda.is_available() else torch.float32,
-        device_map="auto",
+    model_name,
+    torch_dtype=torch.bfloat16 if torch.cuda.is_available() else torch.float32,
+    device_map="auto",
+    trust_remote_code=True,   # needed for Meta LLaMA models
+    use_auth_token=True       # uses your CLI login token
     )
+    tokenizer = AutoTokenizer.from_pretrained(model_name, use_auth_token=True)
+
     tokenizer = AutoTokenizer.from_pretrained(model_name)
 
     gen_pipe = pipeline(
